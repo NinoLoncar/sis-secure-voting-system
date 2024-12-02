@@ -27,7 +27,7 @@ party varchar(150) NOT NULL
 );
 
 INSERT INTO candidates (first_name, last_name, party) 
-VALUES ('Walther','White','The danger'), 
+VALUES ('Walter','White','The danger'), 
 ('Gustavo','Fring','Los pollos hermanos'),
 ('Hank','Schrader','DEA'),
 ('Hector','Salamanca','Cartel');
