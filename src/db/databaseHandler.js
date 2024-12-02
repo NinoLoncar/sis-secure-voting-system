@@ -13,12 +13,12 @@ class Database {
   }
 
   executeQuery(sql, data, callbackFunction) {
-    this.vezaDB.all(sql, data, callbackFunction);
+    this.dbConnection.all(sql, data, callbackFunction);
   }
 
   executeQuery(sql, data) {
     return new Promise((resolve, reject) => {
-      this.vezaDB.all(sql, data, (error, result) => {
+      this.dbConnection.all(sql, data, (error, result) => {
         if (error) reject(error);
         else resolve(result);
       });
@@ -26,7 +26,7 @@ class Database {
   }
 
   disconnect() {
-    this.vezaDB.close();
+    this.dbConnection.close();
   }
 }
 
