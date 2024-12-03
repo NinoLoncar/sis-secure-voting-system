@@ -56,6 +56,7 @@ function serveStaticFiles() {
 
 function serveServices() {
   server.post("/login", authenticationService.login);
+  server.get("/logout", authenticationService.logout);
 }
 
 function serveHtml() {

@@ -26,11 +26,18 @@ exports.login = async function (req, res) {
   if (validPassword) {
     //TODO
     // Kreiranje sesije i JWT-a
+    req.session.username = userData.username;
     res.status(200);
     res.send(JSON.stringify({ message: "Successful login" }));
   } else {
     return401(res);
   }
+};
+
+exports.logout = async function (req, res) {
+  req.session.destroy(() => {
+    res.redirect("/");
+  });
 };
 
 function return400(res, message) {
