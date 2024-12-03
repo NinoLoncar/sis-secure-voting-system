@@ -1,6 +1,8 @@
 const express = require("express");
+const session = require("express-session");
 const path = require("path");
 const authenticationService = require("./services/authenticationService.js");
+const crypto = require("crypto");
 
 const server = express();
 const port = 12000;
@@ -26,6 +28,21 @@ function startServer() {
 function configureServer() {
   server.use(express.urlencoded({ extended: true }));
   server.use(express.json());
+  configureSession();
+}
+
+function configureSession() {
+  let sessionSecret = crypto.randomBytes(32).toString("base64");
+  server.use(
+    session({
+      secret: sessionSecret,
+      saveUninitialized: true,
+      cookie: {
+        maxAge: 1000 * 60 * 60,
+      },
+      resave: false,
+    })
+  );
 }
 
 function serveStaticFiles() {
