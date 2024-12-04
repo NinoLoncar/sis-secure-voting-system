@@ -23,8 +23,10 @@
 
 .card img {
     border-radius: 10px;
-    max-width: 100%;
-    height: auto;
+    height: 125px;
+    min-height: 125px;
+    width: 125px;
+    min-width: 125px;
 }
 
 .img-container {
