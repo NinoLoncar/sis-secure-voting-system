@@ -6,9 +6,16 @@
     <title>SVS</title>
     <link rel="icon" type="image/x-icon" href="/images/voting-box.png">
     <link rel="stylesheet" type="text/css" href="/css/style.css">
-    <link rel="stylesheet" type="text/css" href="/css/index.css">
-    <script type="module" src="/js/index.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/results.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module" src="/js/results.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      #content {
+          width: 60%;
+          max-width: 60%;
+      }
+  </style>
 </head>
 
 <body>
@@ -21,21 +28,19 @@
         <div class="collapse navbar-collapse ms-3" id="navbarNav">
           <ul class="navbar-nav me-auto">
               <li class="nav-item">
-                <a class="nav-link active" href="/">VOTE</a>
+                <a class="nav-link" href="/">VOTE</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="results">VOTING RESULTS</a>
+                <a class="nav-link active" href="results">VOTING RESULTS</a>
               </li>
           </ul>
       </div>
         <a id="aLogout" href="logout" class="ms-auto">LOG OUT</a>
     </div>
   </nav>
-  <div class="container py-5">
-    <div class="main-content">
-      <div id="divVotingContainer" class="card-container">
-      </div>
+  <div class="d-flex justify-content-center align-items-center">
+    <div id="content">
+        <canvas id="myChart"></canvas>
     </div>
-  </div>
-</body>
+</div></body>
 </html>
