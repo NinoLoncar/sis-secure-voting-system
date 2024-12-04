@@ -29,7 +29,6 @@ function createCard(candidate) {
     card.appendChild(imgContainer);
     card.appendChild(detailsList);
     card.appendChild(voteButton);
-
     return card;
 }
 
@@ -49,17 +48,26 @@ function createDetailsList(candidate) {
     const ul = document.createElement('ul');
     ul.classList.add('list-group', 'list-group-flush');
 
+    const nameItem = createNameItem(candidate);
+    const partyItem = partyItem();
+
+    ul.appendChild(nameItem);
+    ul.appendChild(partyItem);
+    return ul;
+}
+
+function createNameItem(candidate) {
     const nameItem = document.createElement('li');
     nameItem.classList.add('list-group-item');
     nameItem.textContent = `Name: ${candidate.first_name} ${candidate.last_name}`;
-    ul.appendChild(nameItem);
+    return nameItem;
+}
 
+function createPartyItem(candidate) {
     const partyItem = document.createElement('li');
     partyItem.classList.add('list-group-item');
     partyItem.textContent = `Party: ${candidate.party}`;
-    ul.appendChild(partyItem);
-
-    return ul;
+    return partyItem;
 }
 
 function createVoteButton(candidate) {
