@@ -5,6 +5,7 @@
 #aLogout {
     text-decoration: none;
     color: black;
+    font-weight: bold;
 }
 
 #aLogout:hover {

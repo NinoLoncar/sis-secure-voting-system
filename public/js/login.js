@@ -21,7 +21,7 @@ function isFormValid() {
 
 async function login() {
     const options = setOptions();
-    var response = await fetch('http://localhost:12000/login', options);
+    let response = await fetch('http://localhost:12000/login', options);
     console.log(response)
     response.ok ? handleLoginSuccess() : handleLoginFailure();
 }
@@ -35,7 +35,7 @@ function setOptions() {
 }
 
 function setBody() {
-    var body = {
+    let body = {
         username: txtUsername.value,
         password: txtPassword.value,
     }
