@@ -1,3 +1,7 @@
 .bg-oldlace {
 	background-color: oldlace;
 }
+
+#lblError {
+    visibility: hidden;
+}
