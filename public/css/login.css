@@ -7,9 +7,7 @@
 }
 
 .login-container {
-    min-width: 1000px;
-}
-
-.login-container {
-	width: 100%;
+    max-width: 500px;
+    width: 100%;
+    padding: 1rem;
 }

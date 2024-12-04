@@ -48,7 +48,7 @@ VALUES ('Walter','White','The danger','https://i.pinimg.com/originals/b7/76/a7/b
 DELETE FROM candidates;
 
 UPDATE candidates
-SET image_url = 'https://pbs.twimg.com/profile_images/378800000297781379/6395cb24dc09c37c938ffc541d0290d4_400x400.jpeg'
+SET image_url = 'https://wallpaperaccess.com/full/9176760.jpg'
 WHERE first_name = 'Hector';
 
 
