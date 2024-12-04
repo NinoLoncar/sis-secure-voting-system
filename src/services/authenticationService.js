@@ -18,7 +18,7 @@ exports.login = async function (req, res) {
     return;
   }
 
-  let validPassword = bycript.verifyPassword(
+  let validPassword = await bycript.verifyPassword(
     userData.password,
     existingUser.password
   );

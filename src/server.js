@@ -2,6 +2,8 @@ const express = require("express");
 const session = require("express-session");
 const path = require("path");
 const authenticationService = require("./services/authenticationService.js");
+const candidateService = require("./services/candidateService.js");
+
 const crypto = require("crypto");
 
 const server = express();
@@ -57,6 +59,8 @@ function serveStaticFiles() {
 function serveServices() {
   server.post("/login", authenticationService.login);
   server.get("/logout", authenticationService.logout);
+
+  server.get("/candidates", candidateService.getCandidates);
 }
 
 function serveHtml() {
@@ -65,5 +69,8 @@ function serveHtml() {
   });
   server.get("/login", (req, res) => {
     res.sendFile(path.join(__dirname, "../public/html/login.html"));
+  });
+  server.get("/results", (req, res) => {
+    res.sendFile(path.join(__dirname, "../public/html/results.html"));
   });
 }
