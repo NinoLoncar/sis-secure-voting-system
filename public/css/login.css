@@ -5,3 +5,11 @@
 #lblError {
     visibility: hidden;
 }
+
+.login-container {
+    min-width: 1000px;
+}
+
+.login-container {
+	width: 100%;
+}
