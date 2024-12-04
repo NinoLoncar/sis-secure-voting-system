@@ -1,9 +1,10 @@
 const express = require("express");
 const session = require("express-session");
 const path = require("path");
+const log4js = require("log4js");
 const authenticationService = require("./services/authenticationService.js");
 const candidateService = require("./services/candidateService.js");
-
+const auditLog = require("./utils/auditLog.js");
 const crypto = require("crypto");
 
 const server = express();
@@ -28,6 +29,12 @@ function startServer() {
 }
 
 function configureServer() {
+  server.use(
+    log4js.connectLogger(auditLog.getLogger("HTTP"), {
+      level: "info",
+      format: ":remote-addr :user-agent :method :url :status :response-time ms",
+    })
+  );
   server.use(express.urlencoded({ extended: true }));
   server.use(express.json());
   configureSession();
