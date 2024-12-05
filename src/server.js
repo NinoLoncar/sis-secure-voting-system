@@ -2,13 +2,17 @@ const express = require("express");
 const session = require("express-session");
 const path = require("path");
 const log4js = require("log4js");
-const authenticationService = require("./services/authenticationService.js");
-const candidateService = require("./services/candidateService.js");
-const auditLog = require("./utils/auditLog.js");
 const crypto = require("crypto");
 
+require("dotenv-safe").config();
+
+const authenticationService = require("./services/authenticationService.js");
+const candidateService = require("./services/candidateService.js");
+const voteService = require("./services/voteService.js");
+const auditLog = require("./utils/auditLog.js");
+
 const server = express();
-const port = 12000;
+const port = process.env.PORT || 12000;
 
 startServer();
 
@@ -68,6 +72,7 @@ function serveServices() {
   server.get("/logout", authenticationService.logout);
 
   server.get("/candidates", candidateService.getCandidates);
+  server.post("/vote", voteService.postVote);
 }
 
 function serveHtml() {
