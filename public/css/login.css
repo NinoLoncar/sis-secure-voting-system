@@ -1,15 +1,9 @@
-.bg-oldlace {
-	background-color: oldlace;
-}
-
 #lblError {
     visibility: hidden;
 }
 
-.login-container {
-    min-width: 1000px;
-}
-
-.login-container {
-	width: 100%;
+#divLogin.login-container {
+    max-width: 400px;
+    width: 100%;
+    padding: 1rem;
 }

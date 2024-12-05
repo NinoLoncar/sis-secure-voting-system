@@ -14,6 +14,7 @@
     "dotenv-safe": "^9.1.0",
     "express": "^4.21.1",
     "express-session": "^1.18.1",
+    "nodemailer": "^6.9.16",
     "log4js": "^6.9.1",
     "paillier-bigint": "^3.4.3",
     "sqlite3": "^5.1.7"

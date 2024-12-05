@@ -1,7 +1,10 @@
 const UserDAO = require("../db/daos/votersDao.js");
 const bycript = require("../utils/encryption/bcryptHasher.js");
+const nodemailer = require("../utils/nodemailer.js")
 const auditLog = require("../utils/auditLog.js");
+
 let logger = auditLog.getLogger("Auth");
+
 exports.login = async function (req, res) {
   let userDao = new UserDAO();
   let userData = req.body;
@@ -33,11 +36,11 @@ exports.login = async function (req, res) {
     // Kreiranje sesije i JWT-a
     req.session.username = userData.username;
     res.status(200);
-    res.send(JSON.stringify({ message: "Successful login" }));
+    res.send(JSON.stringify({ message: "Successful login"}));
   } else {
     let message = `${req.ip} Failed login with username ${userData.username}`;
     log(message);
-    return401(res);
+    return401(res, "Wrong credentials");
   }
 };
 
@@ -51,14 +54,62 @@ exports.logout = async function (req, res) {
   });
 };
 
+exports.sendTwoFactorAuthCode = async function (req, res) {
+  res.type("application/json");
+
+  if (req.session.code) {
+    res.status(204).send(JSON.stringify({message: "Code already sent to email"}));
+    return;
+  }
+
+  try{
+    await sendMail(req);
+    res.status(200).send(JSON.stringify({message: "Code sent to email"}));
+    return;
+  }
+  catch (error) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+exports.checkTwoFactorAuthCode = async function (req, res) {
+  res.type("application/json");
+
+  let userTwoFactorCode = req.body.code;
+  let storedTwoFactorCode = req.session.code;
+
+  if (userTwoFactorCode == storedTwoFactorCode) {
+    res.status(200).json({message: "Successful two factor authentication"})
+  } else {
+    req.session.destroy(() => {});
+    return401(res, "Two factor authentication failed");
+  }
+}
+
 function return400(res, message) {
   res.status(400);
   res.send(JSON.stringify({ error: message }));
 }
 
-function return401(res) {
+function return401(res, message) {
   res.status(401);
-  res.send(JSON.stringify({ error: "Wrong credentials" }));
+  res.send(JSON.stringify({ error: message }));
+}
+
+async function sendMail(req) {
+  let userDao = new UserDAO();
+  let username = req.session.username;
+  let user = await userDao.getVoterByUsername(username);
+
+  let code = generateRandomCodeNumber();
+  req.session.code = code;
+
+  await nodemailer.sendMail('fusion.project.management.app@gmail.com', `${user.email}`, 'SVS - 2FA Code', `Your code: ${code}`);
+  return;
+}
+
+function generateRandomCodeNumber() {
+  return Math.floor(100000 + Math.random() * 900000);
 }
 
 function log(message) {

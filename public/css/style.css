@@ -2,6 +2,10 @@ body {
 	margin: 0;
 }
 
+.bg-oldlace {
+	background-color: oldlace;
+}
+
 #navigation {
 	background-color: blanchedalmond;
 }
