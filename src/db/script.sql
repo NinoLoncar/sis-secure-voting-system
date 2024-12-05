@@ -17,7 +17,7 @@ ADD COLUMN image_url TEXT DEFAULT NULL;
 
 DELETE FROM voters;
 INSERT INTO voters (username, email, password, voted) 
-VALUES ('admin','admin','$2a$12$w4MoQkvClE3iv6.oCp9hue74ZYSNqVkg8h8PEt7xLJ4EtyaYiw.aq', FALSE);
+VALUES ('admin','karlomilos7@gmail.com','$2a$12$w4MoQkvClE3iv6.oCp9hue74ZYSNqVkg8h8PEt7xLJ4EtyaYiw.aq', FALSE);
 
 
 CREATE TABLE votes (
@@ -33,8 +33,8 @@ last_name varchar(100) NOT NULL,
 party varchar(150) NOT NULL
 );
 
-INSERT INTO candidates (username, email, password, voted) 
-VALUES ('admin','admin','admin', FALSE);
+INSERT INTO voters (username, email, password, voted) 
+VALUES ('user','karlomilos7@gmail.com','admin', FALSE);
 
 
 
