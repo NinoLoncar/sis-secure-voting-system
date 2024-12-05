@@ -12,6 +12,13 @@ class VoterDao {
     if (data.length == 1) return data[0];
     else return null;
   };
+
+  setVotedToTrue = async function (id) {
+    this.db.connect();
+    let sql = "UPDATE voters SET voted = TRUE WHERE id = ?;";
+    await this.db.executeQuery(sql, [id]);
+    this.db.disconnect();
+  };
 }
 
 module.exports = VoterDao;
