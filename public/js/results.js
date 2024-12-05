@@ -3,38 +3,38 @@ window.addEventListener('DOMContentLoaded', ()=>{
 })
 
 function generateChart() {
-    const candidates = [
+    let candidates = [
         { name: "Walter White", votes: 12 },
         { name: "Hank Schrader", votes: 19 },
         { name: "Hector Salamanca", votes: 3 },
         { name: "Gustavo Fring", votes: 5 }
     ];
-    const chartAttributes = createChartAttributes(candidates)
+    let chartAttributes = createChartAttributes(candidates)
     createChart(chartAttributes.labels, chartAttributes.votes, chartAttributes.backgroundColor, chartAttributes.borderColor);
 }
 
 function createChartAttributes(candidates) {
-    const labels = candidates.map(candidate => candidate.name);
-    const votes = candidates.map(candidate => candidate.votes);
-    const backgroundColor = generateColors(candidates.length);
-    const borderColor = backgroundColor.map(color => color.replace("0.2", "1"));
+    let labels = candidates.map(candidate => candidate.name);
+    let votes = candidates.map(candidate => candidate.votes);
+    let backgroundColor = generateColors(candidates.length);
+    let borderColor = backgroundColor.map(color => color.replace("0.2", "1"));
 
     return { labels, votes, backgroundColor, borderColor };
 }
 
 function generateColors(count) {
-    const colors = [];
+    let colors = [];
     for (let i = 0; i < count; i++) {
-        const r = Math.floor(Math.random() * 255);
-        const g = Math.floor(Math.random() * 255);
-        const b = Math.floor(Math.random() * 255);
+        let r = Math.floor(Math.random() * 255);
+        let g = Math.floor(Math.random() * 255);
+        let b = Math.floor(Math.random() * 255);
         colors.push(`rgba(${r}, ${g}, ${b}, 0.5)`);
     }
     return colors;
 }
 
 function createChart(labels, votes, backgroundColor, borderColor) {
-    const ctx = document.getElementById('canvasChart').getContext('2d');
+    let ctx = document.getElementById('canvasChart').getContext('2d');
     new Chart(ctx, {
         type: 'bar',
         data: {

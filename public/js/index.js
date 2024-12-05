@@ -4,27 +4,27 @@ window.addEventListener('DOMContentLoaded', ()=>{
 
 async function setVotingOptions() {
     let response = await fetch('http://localhost:12000/candidates');
-    const candidates = await response.json();
+    let candidates = await response.json();
     populateVotingOptions(candidates);
 }
 
 function populateVotingOptions(candidates) {
-    const votingContainer = document.getElementById('divVotingContainer');
+    let votingContainer = document.getElementById('divVotingContainer');
     votingContainer.innerHTML = '';
 
     candidates.forEach(candidate => {
-        const card = createCard(candidate);
+        let card = createCard(candidate);
         votingContainer.appendChild(card);
     });
 }
 
 function createCard(candidate) {
-    const card = document.createElement('div');
+    let card = document.createElement('div');
     card.classList.add('card', 'card-width');
 
-    const imgContainer = createImageContainer(candidate);
-    const detailsList = createDetailsList(candidate);
-    const voteButton = createVoteButton(candidate);
+    let imgContainer = createImageContainer(candidate);
+    let detailsList = createDetailsList(candidate);
+    let voteButton = createVoteButton(candidate);
 
     card.appendChild(imgContainer);
     card.appendChild(detailsList);
@@ -33,9 +33,9 @@ function createCard(candidate) {
 }
 
 function createImageContainer(candidate) {
-    const imgContainer = document.createElement('div');
+    let imgContainer = document.createElement('div');
     imgContainer.classList.add('img-container');
-    const img = document.createElement('img');
+    let img = document.createElement('img');
     img.src = candidate.image_url;
     img.alt = 'candidate image';
     imgContainer.appendChild(img);
@@ -43,11 +43,11 @@ function createImageContainer(candidate) {
 }
 
 function createDetailsList(candidate) {
-    const ul = document.createElement('ul');
+    let ul = document.createElement('ul');
     ul.classList.add('list-group', 'list-group-flush');
 
-    const nameItem = createNameItem(candidate);
-    const partyItem = createPartyItem(candidate);
+    let nameItem = createNameItem(candidate);
+    let partyItem = createPartyItem(candidate);
 
     ul.appendChild(nameItem);
     ul.appendChild(partyItem);
@@ -55,21 +55,21 @@ function createDetailsList(candidate) {
 }
 
 function createNameItem(candidate) {
-    const nameItem = document.createElement('li');
+    let nameItem = document.createElement('li');
     nameItem.classList.add('list-group-item');
     nameItem.textContent = `Name: ${candidate.first_name} ${candidate.last_name}`;
     return nameItem;
 }
 
 function createPartyItem(candidate) {
-    const partyItem = document.createElement('li');
+    let partyItem = document.createElement('li');
     partyItem.classList.add('list-group-item');
     partyItem.textContent = `Party: ${candidate.party}`;
     return partyItem;
 }
 
 function createVoteButton(candidate) {
-    const voteButton = document.createElement('button');
+    let voteButton = document.createElement('button');
     voteButton.type = 'submit';
     voteButton.classList.add('btn', 'btn-primary', 'w-100');
     voteButton.textContent = 'VOTE';

@@ -7,10 +7,10 @@ window.addEventListener('DOMContentLoaded', ()=>{
 })
 
 function setLoginButton() {
-    btnLogin.addEventListener('click', handleLoginClick);
+    btnLogin.addEventListener('click', handleLoginButtonClick);
 }
 
-function handleLoginClick(event) {
+function handleLoginButtonClick(event) {
     event.preventDefault();
     isFormValid() ? login() : loginForm.reportValidity();
 }
@@ -20,10 +20,9 @@ function isFormValid() {
 }
 
 async function login() {
-    const options = setOptions();
+    let options = setOptions();
     let response = await fetch('http://localhost:12000/login', options);
-    console.log(response)
-    response.ok ? handleLoginSuccess() : handleLoginFailure();
+    response.ok ? handleLoginSuccess(response) : handleLoginFailure();
 }
 
 function setOptions() {
@@ -42,15 +41,18 @@ function setBody() {
     return body;
 }
 
-function handleLoginSuccess() {
+function handleLoginSuccess(response) {
     lblError.style.visibility = 'hidden';
-    txtUsername.value = '';
-    txtPassword.value = '';
-    window.location.href = '/'
+    resetInput();
+    window.location.href = 'two-factor-auth';
 }
 
 function handleLoginFailure() {
     lblError.style.visibility = 'visible';
+    resetInput();
+}
+
+function resetInput() {
     txtUsername.value = '';
     txtPassword.value = '';
 }
