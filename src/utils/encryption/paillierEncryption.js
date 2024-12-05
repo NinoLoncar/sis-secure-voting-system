@@ -1,23 +1,14 @@
 const paillierBigint = require("paillier-bigint");
 
-async function generateKeys(bitLength = 2048) {
-  return paillierBigint.generateRandomKeys(bitLength);
+async function generatePublicKey(n, g) {
+  return new paillierBigint.PublicKey(BigInt(n), BigInt(g));
 }
 
-function encrypt(number, publicKey) {
-  return publicKey.encrypt(number);
+async function generatePrivateKey(lambda, mu, publicKey) {
+  return new paillierBigint.privateKey(BigInt(lambda), BigInt(mu), publicKey);
 }
 
-function decrypt(encryptedNumber, privateKey) {
-  return privateKey.decrypt(encryptedNumber);
-}
-
-function add(encryptedNum1, encryptedNum2, publicKey) {
-  return publicKey.addition(encryptedNum1, encryptedNum2);
-}
-
-function multiply(encryptedNum, scalar, publicKey) {
-  return publicKey.multiply(encryptedNum, scalar);
-}
-
-module.exports = { generateKeys, encrypt, decrypt, add, multiply };
+module.exports = {
+  generatePublicKey,
+  generatePrivateKey,
+};
