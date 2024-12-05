@@ -11,6 +11,13 @@ class VotesDao {
     this.db.disconnect();
     return data;
   };
+
+  insertVote = async function (vote, signature) {
+    this.db.connect();
+    let sql = "INSERT INTO votes (vote, signature) VALUES (?, ?)";
+    var data = await this.db.executeQuery(sql, [vote, signature]);
+    this.db.disconnect();
+  };
 }
 
 module.exports = VotesDao;

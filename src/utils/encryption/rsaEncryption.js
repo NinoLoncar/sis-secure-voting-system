@@ -13,18 +13,20 @@ exports.decrypt = function (encryptedData, privateKey) {
 };
 
 exports.sign = function (data, privateKey) {
+  const pemKey = `-----BEGIN RSA PRIVATE KEY-----\n${privateKey}\n-----END RSA PRIVATE KEY-----`;
+  const privateKeyBuffer = Buffer.from(pemKey, "utf8");
   const signer = crypto.createSign("sha256");
   signer.update(data);
   signer.end();
-  const signature = signer.sign(privateKey);
+  const signature = signer.sign(privateKeyBuffer);
   return signature.toString("base64");
 };
 
 exports.verify = function (data, signature, publicKey) {
+  const pemKey = `-----BEGIN PUBLIC KEY-----\n${publicKey}\n-----END PUBLIC KEY-----`;
+  const publicKeyBuffer = Buffer.from(pemKey, "utf8");
   const verifier = crypto.createVerify("sha256");
   verifier.update(data);
   verifier.end();
-  return verifier.verify(publicKey, Buffer.from(signature, "base64"));
+  return verifier.verify(publicKeyBuffer, Buffer.from(signature, "base64"));
 };
-
-module.exports = RSAHelper;

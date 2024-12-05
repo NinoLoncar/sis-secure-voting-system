@@ -1,12 +1,19 @@
 const express = require("express");
 const session = require("express-session");
 const path = require("path");
+const log4js = require("log4js");
+const crypto = require("crypto");
+
+require("dotenv-safe").config();
+
 const authenticationService = require("./services/authenticationService.js");
 const candidateService = require("./services/candidateService.js");
 const crypto = require("crypto");
+const voteService = require("./services/voteService.js");
+const auditLog = require("./utils/auditLog.js");
 
 const server = express();
-const port = 12000;
+const port = process.env.PORT || 12000;
 
 startServer();
 
@@ -30,6 +37,12 @@ function startServer() {
 }
 
 function configureServer() {
+  server.use(
+    log4js.connectLogger(auditLog.getLogger("HTTP"), {
+      level: "info",
+      format: ":remote-addr :user-agent :method :url :status :response-time ms",
+    })
+  );
   server.use(express.urlencoded({ extended: true }));
   server.use(express.json());
   configureSession();
@@ -72,6 +85,7 @@ function serveServices() {
   server.post("/check-two-factor-auth-code", authenticationService.checkTwoFactorAuthCode);
   
   server.get("/candidates", candidateService.getCandidates);
+  server.post("/vote", voteService.postVote);
 }
 
 function serveHtml() {
