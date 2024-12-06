@@ -74,7 +74,7 @@ exports.endVote = async function (req, res) {
 
     await saveVoteResults(candidates, voteCounts, privateKey);
     return200(res, "Vote ended");
-  } catch {
+  } catch (ex) {
     voteLogger.warn(`Error while vote counting: ${ex.message}`);
     return500(res);
   }
