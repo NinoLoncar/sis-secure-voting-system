@@ -3,10 +3,12 @@ const VotesDao = require("../db/daos/votesDao");
 const CandidateDao = require("../db/daos/candidatesDao.js");
 const paillier = require("../utils/encryption/paillierEncryption.js");
 const rsa = require("../utils/encryption/rsaEncryption.js");
+const auditLog = require("../utils/auditLog.js");
 
 let votersDao = new VotersDao();
 let votesDao = new VotesDao();
 let candidateDao = new CandidateDao();
+let voteLogger = auditLog.getLogger("vote");
 
 exports.postVote = async function (req, res) {
   res.type("application/json");
@@ -15,16 +17,19 @@ exports.postVote = async function (req, res) {
   let username = req.session.username; //izvaditi iz JWTa
   let voter = await votersDao.getVoterByUsername(username);
   if (voter.voted) {
+    voteLogger.info(`${username} tried to vote multiple times`);
     return401(res, "Voter has already voted");
     return;
   }
   let candidateId = req.body.candidate_id;
   if (!candidateId) {
+    voteLogger.info(`${username} sent bad request`);
     return400(res, "Missing candidate_id");
     return;
   }
   let candidate = await candidateDao.getCandidateById(candidateId);
   if (!candidate) {
+    voteLogger.info(`${username} tried to vote for invalid candidate`);
     return400(res, "Invalid candidate_id");
     return;
   }
@@ -33,14 +38,21 @@ exports.postVote = async function (req, res) {
     let signature = createSignature(vote);
     await votesDao.insertVote(vote, signature);
     await votersDao.setVotedToTrue(voter.id);
+    voteLogger.info(`${username} successfully voted`);
     return200(res, "Successful vote");
-  } catch {
+  } catch (ex) {
+    voteLogger.warn(`Error while ${username} voted: ${ex.message}`);
     return500(res);
   }
 };
 
 exports.endVote = async function (req, res) {
   try {
+    res.type("application/json");
+    //TODO
+    //validacija JWT
+    let username = req.session.username; //izvaditi iz JWTa
+    voteLogger.info(`${username} started the vote count`);
     res.type("application/json");
     let publicKey = await paillier.generatePublicKey(
       process.env.PAILLIER_PUBLIC_N,
@@ -62,6 +74,7 @@ exports.endVote = async function (req, res) {
     await saveVoteResults(candidates, voteCounts, privateKey);
     return200(res, "Vote ended");
   } catch {
+    voteLogger.warn(`Error while vote counting: ${ex.message}`);
     return500(res);
   }
 };
@@ -116,14 +129,18 @@ function initializeVoteCounts(numCandidates, publicKey) {
 }
 
 function countVotes(votes, voteCounts, publicKey) {
+  let numOfValidVoutesCounted = 0;
   votes.forEach((vote) => {
     if (verifyVote(vote)) {
+      voteLogger.info(`${vote.id} - Successful signature verification`);
       addVote(vote.encrypted_vote, voteCounts, publicKey);
-      console.log("Dobar potpis");
+      voteLogger.info(`${vote.id} - Counted`);
+      numOfValidVoutesCounted++;
     } else {
-      console.log("Krivi potpis");
+      voteLogger.warn(`${vote.id} - Failed signature verification`);
     }
   });
+  voteLogger.info(`Counted ${numOfValidVoutesCounted} valid votes`);
 }
 function verifyVote(vote) {
   return rsa.verify(
