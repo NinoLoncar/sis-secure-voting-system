@@ -31,7 +31,7 @@ class CandidatesDao {
   saveVoteCount = async function (id, count) {
     this.db.connect();
     let sql = "UPDATE candidates SET vote_count = ? WHERE id = ?;";
-    var result = await this.db.executeQuery(sql, [id, count]);
+    var result = await this.db.executeQuery(sql, [count, id]);
     this.db.disconnect();
   };
 }
