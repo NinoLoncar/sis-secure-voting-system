@@ -1,3 +1,10 @@
+#divVotedMessage {
+    color:white;
+    font-weight: bold;
+    font-size: x-large;
+    display: none;
+}
+
 .main-content {
 	display: flex;
 	justify-content: center;

@@ -1,11 +1,23 @@
+let RSA_PUBLIC = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqE+hkUIgUFzSM4CSNfyPCoPljsh0EZoiEj1BoQOJScZRHPJVAn/3qVGKgiQAWwvL70acWAPhAz693WbibO0gRsG1MWmgZlQY/vhEmgDr6d1/UcSTLRwqx8wtNu0L2u3x0/MmxxKwrOyEZXJD10e/CS92l/Jna7M2EDSE++MhZ6IN26Gf8QZotfqiVeVcbF2e8kjTqjJT6FRUD8wy5RdlB+DdTgQmDXmRZkJvI64Dz+NaC3LX114wBHUqiUbMbDCm6xWTE1/1YUuc98jE8smh5i0EU2sec13gqHEFgQre9EGZxPuUms9hdx1XyOJivlH+KHiuN0YP0QXT/+mRcQgyqwIDAQAB'
+
 window.addEventListener('DOMContentLoaded', ()=>{
     setVotingOptions();
+    checkIfUserVoted();
 })
 
 async function setVotingOptions() {
     let response = await fetch('http://localhost:12000/candidates');
     let candidates = await response.json();
     populateVotingOptions(candidates);
+}
+
+async function checkIfUserVoted() {
+    let response = await fetch('http://localhost:12000/voted');
+    let data = await response.json();
+    if (data.voted) {
+        disableVoteButtons();
+        displayVoteMessage(response)
+    }
 }
 
 function populateVotingOptions(candidates) {
@@ -71,8 +83,50 @@ function createPartyItem(candidate) {
 function createVoteButton(candidate) {
     let voteButton = document.createElement('button');
     voteButton.type = 'submit';
-    voteButton.classList.add('btn', 'btn-primary', 'w-100');
+    voteButton.classList.add('btn-vote','btn', 'btn-primary', 'w-100');
     voteButton.textContent = 'VOTE';
-    voteButton.addEventListener('click', () => handleVote(candidate.id));
+    voteButton.addEventListener('click', () => handleVoteButtonClick(candidate.id));
     return voteButton;
 }
+
+async function handleVoteButtonClick(candidateId) {
+    let options = setOptions(candidateId);
+    let response = await fetch('http://localhost:12000/vote', options);
+    disableVoteButtons();
+    displayVoteMessage(response)
+}
+
+function setOptions(candidateId) {
+    return {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({candidate_id: candidateId})
+    }
+}
+
+function disableVoteButtons() {
+    let voteButtons = document.getElementsByClassName('btn-vote');
+    for (let button of voteButtons) {
+        button.style.display = 'none';
+    }
+}
+
+function displayVoteMessage(response) {
+    response.ok ? displayVoteConfirmationMessage() : displayVoteErrorMessage();
+}
+
+function displayVoteConfirmationMessage() {
+    let messageDiv = document.getElementById('divVotedMessage');
+    messageDiv.style.backgroundColor = 'teal';
+    messageDiv.textContent = 'YOU HAVE VOTED!';
+    messageDiv.style.display = 'block';
+}
+
+function displayVoteErrorMessage() {
+    let messageDiv = document.getElementById('divVotedMessage');
+    messageDiv.style.backgroundColor = 'red';
+    messageDiv.textContent = 'SOMETHING WENT WRONG! PLEASE TRY AGAIN!';
+    messageDiv.style.display = 'block';
+}
+
+

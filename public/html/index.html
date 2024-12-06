@@ -19,19 +19,7 @@
             <img src="../images/voting-box.png" alt="Logo" width="30" height="30" class="d-inline-block align-text-top">
             SVS
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse ms-3" id="navbarNav">
-          <ul class="navbar-nav me-auto">
-              <li class="nav-item">
-                <a class="nav-link active" href="/">VOTE</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="results">VOTING RESULTS</a>
-              </li>
-          </ul>
+        <div class="ms-3" id="navbarNav">
           <ul class="navbar-nav">
               <li class="nav-item">
                 <a class="nav-link" href="logout">LOG OUT</a>
@@ -39,10 +27,11 @@
           </ul>
         </div>
     </div>
-</nav>
-  <div class="container py-5">
-    <div class="main-content">
-      <div id="divVotingContainer" class="card-container">
+  </nav>
+  <div id="divVotedMessage" class="text-center"></div>
+    <div class="container py-5">
+      <div class="main-content">
+        <div id="divVotingContainer" class="card-container">
       </div>
     </div>
   </div>
