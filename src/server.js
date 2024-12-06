@@ -86,8 +86,9 @@ function serveServices() {
 
   server.get("/candidates", candidateService.getCandidates);
   server.get("/voted", voteService.getVotedStatus);
-  server.get("/rsa-public-key", voteService.getRSAPublicKey);
   server.post("/vote", voteService.postVote);
+
+  server.get("/rsa-public-key", voteService.getRSAPublicKey);
 }
 
 function serveHtml() {

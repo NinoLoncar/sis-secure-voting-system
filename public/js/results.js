@@ -2,20 +2,16 @@ window.addEventListener('DOMContentLoaded', ()=>{
     generateChart();
 })
 
-function generateChart() {
-    let candidates = [
-        { name: "Walter White", votes: 12 },
-        { name: "Hank Schrader", votes: 19 },
-        { name: "Hector Salamanca", votes: 3 },
-        { name: "Gustavo Fring", votes: 5 }
-    ];
+async function generateChart() {
+    let response = await fetch('http://localhost:12000/candidates');
+    let candidates = await response.json();
     let chartAttributes = createChartAttributes(candidates)
     createChart(chartAttributes.labels, chartAttributes.votes, chartAttributes.backgroundColor, chartAttributes.borderColor);
 }
 
 function createChartAttributes(candidates) {
-    let labels = candidates.map(candidate => candidate.name);
-    let votes = candidates.map(candidate => candidate.votes);
+    let labels = candidates.map(candidate => candidate.first_name + ' ' + candidate.last_name);
+    let votes = candidates.map(candidate => candidate.vote_count);
     let backgroundColor = generateColors(candidates.length);
     let borderColor = backgroundColor.map(color => color.replace("0.2", "1"));
 
