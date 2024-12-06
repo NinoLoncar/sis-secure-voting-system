@@ -19,9 +19,10 @@ startServer();
 function startServer() {
   configureServer();
   serveStaticFiles();
-  /*
+
+
   serverMiddleware();
-  */
+
   serveHtml();
   serveServices();
 
@@ -54,7 +55,7 @@ function configureSession() {
       secret: sessionSecret,
       saveUninitialized: true,
       cookie: {
-        maxAge: 1000 * 60 * 60,
+        maxAge: 1000 * 60 * 60
       },
       resave: false,
     })
@@ -80,6 +81,7 @@ function serveServices() {
   server.post("/login", authenticationService.login);
   server.get("/logout", authenticationService.logout);
 
+
   server.get(
     "/send-two-factor-auth-code",
     authenticationService.sendTwoFactorAuthCode
@@ -90,7 +92,10 @@ function serveServices() {
   );
 
   server.get("/candidates", candidateService.getCandidates);
+  server.get("/voted", voteService.getVotedStatus);
   server.post("/vote", voteService.postVote);
+
+  server.get("/rsa-public-key", voteService.getRSAPublicKey);
   server.get("/end-vote", voteService.endVote);
 }
 
@@ -110,11 +115,20 @@ function serveHtml() {
 }
 
 function isAuthenticated(req, res, next) {
-  if (req.session && req.session.username) {
-    return next();
+  if (!req.session || !req.session.username) {
+    if (req.path === '/login') {
+      return next();
+    }
+    if (req.method === 'POST') {
+      return res.status(401).send({ error: 'Unauthorized: Session expired' });
+    }
+    return res.redirect('/login');
   }
-  if (req.path === "/login") {
-    return next();
+  if (!req.session.verified) {
+    if (req.path === '/two-factor-auth' || req.path === '/send-two-factor-auth-code' || req.path === '/check-two-factor-auth-code') {
+      return next();
+    }
+    return res.redirect('/two-factor-auth');
   }
-  return res.redirect("/login");
+  next();
 }

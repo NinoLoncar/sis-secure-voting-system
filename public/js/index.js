@@ -1,11 +1,21 @@
 window.addEventListener('DOMContentLoaded', ()=>{
     setVotingOptions();
+    checkIfUserVoted();
 })
 
 async function setVotingOptions() {
     let response = await fetch('http://localhost:12000/candidates');
     let candidates = await response.json();
     populateVotingOptions(candidates);
+}
+
+async function checkIfUserVoted() {
+    let response = await fetch('http://localhost:12000/voted');
+    let data = await response.json();
+    if (data.voted) {
+        disableVoteButtons();
+        displayVoteMessage(response)
+    }
 }
 
 function populateVotingOptions(candidates) {
@@ -71,8 +81,65 @@ function createPartyItem(candidate) {
 function createVoteButton(candidate) {
     let voteButton = document.createElement('button');
     voteButton.type = 'submit';
-    voteButton.classList.add('btn', 'btn-primary', 'w-100');
+    voteButton.classList.add('btn-vote','btn', 'btn-primary', 'w-100');
     voteButton.textContent = 'VOTE';
-    voteButton.addEventListener('click', () => handleVote(candidate.id));
+    voteButton.addEventListener('click', () => {handleVoteButtonClick(candidate.id)} );
     return voteButton;
+}
+
+async function handleVoteButtonClick(candidateId) {
+    enableLoader();
+    disableVoteButtons();
+    let rsaEncrypter = new RSAEncrypter();
+    let encryptedCandidateId = await rsaEncrypter.encrypt(candidateId);
+    console.log(encryptedCandidateId)
+    let options = setOptions(encryptedCandidateId);
+    let response = await fetch('http://localhost:12000/vote', options);
+    disableLoader();
+    displayVoteMessage(response);
+}
+
+function enableLoader() {
+    let loader = document.getElementById("loader");
+    loader.style.display = 'block';
+}
+
+function disableLoader() {
+    let loader = document.getElementById("loader");
+    loader.style.display = 'none';
+}
+
+function setOptions(encryptedCandidateId) {
+    return {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({candidate_id: encryptedCandidateId})
+    }
+}
+
+
+
+function disableVoteButtons() {
+    let voteButtons = document.getElementsByClassName('btn-vote');
+    for (let button of voteButtons) {
+        button.style.display = 'none';
+    }
+}
+
+function displayVoteMessage(response) {
+    response.ok ? displayVoteConfirmationMessage() : displayVoteErrorMessage();
+}
+
+function displayVoteConfirmationMessage() {
+    let messageDiv = document.getElementById('divVotedMessage');
+    messageDiv.style.backgroundColor = 'teal';
+    messageDiv.textContent = 'YOU HAVE VOTED!';
+    messageDiv.style.display = 'block';
+}
+
+function displayVoteErrorMessage() {
+    let messageDiv = document.getElementById('divVotedMessage');
+    messageDiv.style.backgroundColor = 'red';
+    messageDiv.textContent = 'SOMETHING WENT WRONG! PLEASE TRY AGAIN!';
+    messageDiv.style.display = 'block';
 }

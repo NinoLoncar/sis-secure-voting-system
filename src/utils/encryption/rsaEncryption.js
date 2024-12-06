@@ -7,8 +7,10 @@ exports.encrypt = function (data, publicKey) {
 };
 
 exports.decrypt = function (encryptedData, privateKey) {
+  const pemKey = `-----BEGIN RSA PRIVATE KEY-----\n${privateKey}\n-----END RSA PRIVATE KEY-----`;
+  const privateKeyBuffer = Buffer.from(pemKey, "utf8");  
   const buffer = Buffer.from(encryptedData, "base64");
-  const decrypted = crypto.privateDecrypt(privateKey, buffer);
+  const decrypted = crypto.privateDecrypt(privateKeyBuffer, buffer);
   return decrypted.toString("utf8");
 };
 

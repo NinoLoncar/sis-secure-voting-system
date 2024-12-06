@@ -1,7 +1,6 @@
 window.addEventListener('DOMContentLoaded', async ()=>{
     getTwoFactorAuthCode();
     setSendCodeButton();
-    setUpAutoFill();
 })
 
 async function getTwoFactorAuthCode() {

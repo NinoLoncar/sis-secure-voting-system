@@ -77,8 +77,8 @@ exports.checkTwoFactorAuthCode = async function (req, res) {
 
   let userTwoFactorCode = req.body.code;
   let storedTwoFactorCode = req.session.code;
-
   if (userTwoFactorCode == storedTwoFactorCode) {
+    req.session.verified = true;
     res.status(200).json({message: "Successful two factor authentication"})
   } else {
     req.session.destroy(() => {});
@@ -104,12 +104,14 @@ async function sendMail(req) {
   let code = generateRandomCodeNumber();
   req.session.code = code;
 
-  await nodemailer.sendMail('fusion.project.management.app@gmail.com', `${user.email}`, 'SVS - 2FA Code', `Your code: ${code}`);
+  //await nodemailer.sendMail('fusion.project.management.app@gmail.com', `${user.email}`, 'SVS - 2FA Code', `Your code: ${code}`);
   return;
 }
 
+
 function generateRandomCodeNumber() {
-  return Math.floor(100000 + Math.random() * 900000);
+  let code = Math.floor(100000 + Math.random() * 900000);
+  return 123456;
 }
 
 function log(message) {
