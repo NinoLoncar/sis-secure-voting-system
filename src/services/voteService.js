@@ -19,11 +19,12 @@ exports.postVote = async function (req, res) {
     res.send(JSON.stringify({ error: "Voter has already voted" }));
     return;
   }
-  let candidateId = req.body.candidate_id;
-  if (!candidateId) {
+  let encryptedCandidateId = req.body.candidate_id;
+  if (!encryptedCandidateId) {
     return400(res, "Missing candidate_id");
     return;
   }
+  let candidateId = rsa.decrypt(encryptedCandidateId, process.env.RSA_PRIVATE);
   let candidate = await candidateDao.getCandidateById(candidateId);
   if (!candidate) {
     return400(res, "Invalid candidate_id");
@@ -43,10 +44,15 @@ exports.postVote = async function (req, res) {
 };
 
 exports.getVotedStatus = async function(req, res) {
-  let username = req.session.username; //izvaditi iz JWTa
+  let username = req.session.username;
   let voter = await votersDao.getVoterByUsername(username);
   res.status(200);
   res.send(JSON.stringify({ voted: voter.voted }));
+}
+
+exports.getRSAPublicKey = async function(req, res) {
+  res.status(200);
+  res.send(JSON.stringify({ key: process.env.RSA_PUBLIC}));
 }
 
 function return400(res, message) {
