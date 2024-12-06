@@ -44,6 +44,7 @@ exports.postVote = async function (req, res) {
 };
 
 exports.getVotedStatus = async function(req, res) {
+  res.type("application/json");
   let username = req.session.username;
   let voter = await votersDao.getVoterByUsername(username);
   res.status(200);
@@ -51,6 +52,7 @@ exports.getVotedStatus = async function(req, res) {
 }
 
 exports.getRSAPublicKey = async function(req, res) {
+  res.type("application/json");
   res.status(200);
   res.send(JSON.stringify({ key: process.env.RSA_PUBLIC}));
 }
