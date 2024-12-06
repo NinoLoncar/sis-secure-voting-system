@@ -42,6 +42,13 @@ exports.postVote = async function (req, res) {
   }
 };
 
+exports.getVotedStatus = async function(req, res) {
+  let username = req.session.username; //izvaditi iz JWTa
+  let voter = await votersDao.getVoterByUsername(username);
+  res.status(200);
+  res.send(JSON.stringify({ voted: voter.voted }));
+}
+
 function return400(res, message) {
   res.status(400);
   res.send(JSON.stringify({ error: message }));
@@ -71,3 +78,4 @@ async function createEncryptedVote(id) {
 function createSignature(text) {
   return rsa.sign(text, process.env.RSA_PRIVATE);
 }
+
