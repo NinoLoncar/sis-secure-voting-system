@@ -1,5 +1,3 @@
-let RSA_PUBLIC = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqE+hkUIgUFzSM4CSNfyPCoPljsh0EZoiEj1BoQOJScZRHPJVAn/3qVGKgiQAWwvL70acWAPhAz693WbibO0gRsG1MWmgZlQY/vhEmgDr6d1/UcSTLRwqx8wtNu0L2u3x0/MmxxKwrOyEZXJD10e/CS92l/Jna7M2EDSE++MhZ6IN26Gf8QZotfqiVeVcbF2e8kjTqjJT6FRUD8wy5RdlB+DdTgQmDXmRZkJvI64Dz+NaC3LX114wBHUqiUbMbDCm6xWTE1/1YUuc98jE8smh5i0EU2sec13gqHEFgQre9EGZxPuUms9hdx1XyOJivlH+KHiuN0YP0QXT/+mRcQgyqwIDAQAB'
-
 window.addEventListener('DOMContentLoaded', ()=>{
     setVotingOptions();
     checkIfUserVoted();
@@ -85,24 +83,41 @@ function createVoteButton(candidate) {
     voteButton.type = 'submit';
     voteButton.classList.add('btn-vote','btn', 'btn-primary', 'w-100');
     voteButton.textContent = 'VOTE';
-    voteButton.addEventListener('click', () => handleVoteButtonClick(candidate.id));
+    voteButton.addEventListener('click', () => {handleVoteButtonClick(candidate.id)} );
     return voteButton;
 }
 
 async function handleVoteButtonClick(candidateId) {
-    let options = setOptions(candidateId);
-    let response = await fetch('http://localhost:12000/vote', options);
+    enableLoader();
     disableVoteButtons();
-    displayVoteMessage(response)
+    let rsaEncrypter = new RSAEncrypter();
+    let encryptedCandidateId = await rsaEncrypter.encrypt(candidateId);
+    console.log(encryptedCandidateId)
+    let options = setOptions(encryptedCandidateId);
+    let response = await fetch('http://localhost:12000/vote', options);
+    disableLoader();
+    displayVoteMessage(response);
 }
 
-function setOptions(candidateId) {
+function enableLoader() {
+    let loader = document.getElementById("loader");
+    loader.style.display = 'block';
+}
+
+function disableLoader() {
+    let loader = document.getElementById("loader");
+    loader.style.display = 'none';
+}
+
+function setOptions(encryptedCandidateId) {
     return {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({candidate_id: candidateId})
+        body: JSON.stringify({candidate_id: encryptedCandidateId})
     }
 }
+
+
 
 function disableVoteButtons() {
     let voteButtons = document.getElementsByClassName('btn-vote');
@@ -128,5 +143,3 @@ function displayVoteErrorMessage() {
     messageDiv.textContent = 'SOMETHING WENT WRONG! PLEASE TRY AGAIN!';
     messageDiv.style.display = 'block';
 }
-
-
