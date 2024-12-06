@@ -5,7 +5,7 @@ async function generatePublicKey(n, g) {
 }
 
 async function generatePrivateKey(lambda, mu, publicKey) {
-  return new paillierBigint.privateKey(BigInt(lambda), BigInt(mu), publicKey);
+  return new paillierBigint.PrivateKey(BigInt(lambda), BigInt(mu), publicKey);
 }
 
 module.exports = {
