@@ -17,7 +17,7 @@ VALUES ('admin','fusion.project.management.app@gmail.com','$2a$12$w4MoQkvClE3iv6
 CREATE TABLE votes (
 id INTEGER PRIMARY KEY AUTOINCREMENT,
 signature TEXT NOT NULL,
-vote NOT NULL
+encrypted_vote NOT NULL
 );
 
 CREATE TABLE candidates (
@@ -39,3 +39,4 @@ VALUES ('Walter','White','The danger','https://i.pinimg.com/originals/b7/76/a7/b
 
 SELECT * FROM voters;
 SELECT * FROM candidates;
+SELECT * FROM votes;

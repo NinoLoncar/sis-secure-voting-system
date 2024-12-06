@@ -81,14 +81,22 @@ function serveServices() {
   server.post("/login", authenticationService.login);
   server.get("/logout", authenticationService.logout);
 
-  server.get("/send-two-factor-auth-code", authenticationService.sendTwoFactorAuthCode);
-  server.post("/check-two-factor-auth-code", authenticationService.checkTwoFactorAuthCode);
+
+  server.get(
+    "/send-two-factor-auth-code",
+    authenticationService.sendTwoFactorAuthCode
+  );
+  server.post(
+    "/check-two-factor-auth-code",
+    authenticationService.checkTwoFactorAuthCode
+  );
 
   server.get("/candidates", candidateService.getCandidates);
   server.get("/voted", voteService.getVotedStatus);
   server.post("/vote", voteService.postVote);
 
   server.get("/rsa-public-key", voteService.getRSAPublicKey);
+  server.get("/end-vote", voteService.endVote);
 }
 
 function serveHtml() {
@@ -116,7 +124,6 @@ function isAuthenticated(req, res, next) {
     }
     return res.redirect('/login');
   }
-
   if (!req.session.verified) {
     if (req.path === '/two-factor-auth' || req.path === '/send-two-factor-auth-code' || req.path === '/check-two-factor-auth-code') {
       return next();
