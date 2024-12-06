@@ -8,7 +8,6 @@ require("dotenv-safe").config();
 
 const authenticationService = require("./services/authenticationService.js");
 const candidateService = require("./services/candidateService.js");
-const crypto = require("crypto");
 const voteService = require("./services/voteService.js");
 const auditLog = require("./utils/auditLog.js");
 
@@ -80,12 +79,19 @@ function serverMiddleware() {
 function serveServices() {
   server.post("/login", authenticationService.login);
   server.get("/logout", authenticationService.logout);
-  
-  server.get("/send-two-factor-auth-code", authenticationService.sendTwoFactorAuthCode);
-  server.post("/check-two-factor-auth-code", authenticationService.checkTwoFactorAuthCode);
-  
+
+  server.get(
+    "/send-two-factor-auth-code",
+    authenticationService.sendTwoFactorAuthCode
+  );
+  server.post(
+    "/check-two-factor-auth-code",
+    authenticationService.checkTwoFactorAuthCode
+  );
+
   server.get("/candidates", candidateService.getCandidates);
   server.post("/vote", voteService.postVote);
+  server.get("/end-vote", voteService.endVote);
 }
 
 function serveHtml() {
@@ -107,8 +113,8 @@ function isAuthenticated(req, res, next) {
   if (req.session && req.session.username) {
     return next();
   }
-  if (req.path === '/login') {
+  if (req.path === "/login") {
     return next();
   }
-  return res.redirect('/login');
+  return res.redirect("/login");
 }
