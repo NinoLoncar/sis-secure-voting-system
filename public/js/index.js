@@ -95,6 +95,11 @@ async function handleVoteButtonClick(candidateId) {
     console.log(encryptedCandidateId)
     let options = setOptions(encryptedCandidateId);
     let response = await fetch('http://localhost:12000/vote', options);
+
+    if(response.status === 401) {
+        window.location.href = 'login';
+    }
+
     disableLoader();
     displayVoteMessage(response);
 }
@@ -112,7 +117,10 @@ function disableLoader() {
 function setOptions(encryptedCandidateId) {
     return {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${sessionStorage.getItem('token')}`
+         },
         body: JSON.stringify({candidate_id: encryptedCandidateId})
     }
 }

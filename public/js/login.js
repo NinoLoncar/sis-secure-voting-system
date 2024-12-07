@@ -42,6 +42,7 @@ function setBody() {
 }
 
 function handleLoginSuccess(response) {
+
     lblError.style.visibility = 'hidden';
     resetInput();
     window.location.href = 'two-factor-auth';
