@@ -1,0 +1,29 @@
+body {
+	margin: 0;
+}
+
+.bg-oldlace {
+	background-color: oldlace;
+}
+
+#navigation {
+	background-color: blanchedalmond;
+}
+
+.navbar .nav-link:hover {
+    color: dodgerblue;
+}
+
+.navbar .nav-link.active {
+    color: black !important;
+	font-weight: bold;
+}
+
+#aLogout {
+    text-decoration: none;
+    color: black;
+}
+
+#aLogout:hover {
+    color: dodgerblue;
+}
