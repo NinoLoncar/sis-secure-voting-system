@@ -1,6 +1,6 @@
 const UserDAO = require("../db/daos/votersDao.js");
 const bycript = require("../utils/encryption/bcryptHasher.js");
-const nodemailer = require("../utils/nodemailer.js")
+const nodemailer = require("../utils/nodemailer.js");
 const auditLog = require("../utils/auditLog.js");
 const jwt = require("../utils/jwt.js");
 
@@ -35,10 +35,10 @@ exports.login = async function (req, res) {
     log(message);
     //TODO
     // Kreiranje sesije i JWT-a
-    
+
     req.session.username = userData.username;
     res.status(200);
-    res.send(JSON.stringify({ message: "Successful login"}));
+    res.send(JSON.stringify({ message: "Successful login" }));
   } else {
     let message = `${req.ip} Failed login with username ${userData.username}`;
     log(message);
@@ -60,16 +60,17 @@ exports.sendTwoFactorAuthCode = async function (req, res) {
   res.type("application/json");
 
   if (req.session.code) {
-    res.status(204).send(JSON.stringify({message: "Code already sent to email"}));
+    res
+      .status(204)
+      .send(JSON.stringify({ message: "Code already sent to email" }));
     return;
   }
 
-  try{
+  try {
     await sendMail(req);
-    res.status(200).send(JSON.stringify({message: "Code sent to email"}));
+    res.status(200).send(JSON.stringify({ message: "Code sent to email" }));
     return;
-  }
-  catch (error) {
+  } catch (error) {
     return res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -82,17 +83,21 @@ exports.checkTwoFactorAuthCode = async function (req, res) {
   if (userTwoFactorCode == storedTwoFactorCode) {
     req.session.verified = true;
 
-    let token = jwt.generateJwtToken(req.session.username, process.env.JWT_SECRET, process.env.JWT_VALIDITY);
+    let token = jwt.generateJwtToken(
+      req.session.username,
+      process.env.JWT_SECRET,
+      process.env.JWT_VALIDITY
+    );
     res.setHeader("Authorization", "Bearer " + token);
     res.headers = {};
     res.headers.Authorization = "Bearer " + token;
 
-    res.status(200).json({message: "Successful two factor authentication"})
+    res.status(200).json({ message: "Successful two factor authentication" });
   } else {
     req.session.destroy(() => {});
     return401(res, "Two factor authentication failed");
   }
-}
+};
 
 function return400(res, message) {
   res.status(400);
@@ -112,10 +117,14 @@ async function sendMail(req) {
   let code = generateRandomCodeNumber();
   req.session.code = code;
 
-  await nodemailer.sendMail('fusion.project.management.app@gmail.com', `${user.email}`, 'SVS - 2FA Code', `Your code: ${code}`);
+  await nodemailer.sendMail(
+    process.env.EMAIL,
+    `${user.email}`,
+    "SVS - 2FA Code",
+    `Your code: ${code}`
+  );
   return;
 }
-
 
 function generateRandomCodeNumber() {
   let code = Math.floor(100000 + Math.random() * 900000);
