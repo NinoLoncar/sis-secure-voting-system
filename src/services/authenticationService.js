@@ -79,7 +79,7 @@ exports.checkTwoFactorAuthCode = async function (req, res) {
 
   let userTwoFactorCode = req.body.code;
   let storedTwoFactorCode = req.session.code;
-  if (userTwoFactorCode == storedTwoFactorCode || 1==1) {///izbrisati 1==1
+  if (userTwoFactorCode == storedTwoFactorCode) {
     req.session.verified = true;
 
     let token = jwt.kreirajToken(req.session.username, process.env.JWT_SECRET, process.env.JWT_VALIDITY);

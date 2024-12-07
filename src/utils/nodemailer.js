@@ -6,8 +6,8 @@ let mailer = nodemailer.createTransport({
   port: 465,
   secure: true,
   auth: {
-    user: "fusion.project.management.app@gmail.com",
-    pass: "ndst myqk pnhf lpyi",
+    user: process.env.EMAIL,
+    pass: process.env.PASSWORD,
   },
 });
 
