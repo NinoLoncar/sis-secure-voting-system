@@ -16,7 +16,7 @@ exports.postVote = async function (req, res) {
   //TODO
   //validacija JWT
 
-  if(!jwt.provjeriToken(req, process.env.JWT_SECRET)){
+  if(!jwt.verifyToken(req, process.env.JWT_SECRET)){
     res.status(401);
     res.send(JSON.stringify({ error: "Invalid token" }));
     return;
@@ -51,7 +51,6 @@ exports.postVote = async function (req, res) {
     voteLogger.info(`${username} successfully voted`);
     return200(res, "Successful vote");
   } catch (ex) {
-    console.log(ex)
     voteLogger.warn(`Error while ${username} voted: ${ex.message}`);
     return500(res);
   }

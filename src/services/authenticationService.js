@@ -82,7 +82,7 @@ exports.checkTwoFactorAuthCode = async function (req, res) {
   if (userTwoFactorCode == storedTwoFactorCode) {
     req.session.verified = true;
 
-    let token = jwt.kreirajToken(req.session.username, process.env.JWT_SECRET, process.env.JWT_VALIDITY);
+    let token = jwt.generateJwtToken(req.session.username, process.env.JWT_SECRET, process.env.JWT_VALIDITY);
     res.setHeader("Authorization", "Bearer " + token);
     res.headers = {};
     res.headers.Authorization = "Bearer " + token;
