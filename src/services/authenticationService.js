@@ -112,14 +112,14 @@ async function sendMail(req) {
   let code = generateRandomCodeNumber();
   req.session.code = code;
 
-  //await nodemailer.sendMail('fusion.project.management.app@gmail.com', `${user.email}`, 'SVS - 2FA Code', `Your code: ${code}`);
+  await nodemailer.sendMail('fusion.project.management.app@gmail.com', `${user.email}`, 'SVS - 2FA Code', `Your code: ${code}`);
   return;
 }
 
 
 function generateRandomCodeNumber() {
   let code = Math.floor(100000 + Math.random() * 900000);
-  return 123456;
+  return code;
 }
 
 function log(message) {

@@ -3,7 +3,7 @@ const session = require("express-session");
 const path = require("path");
 const log4js = require("log4js");
 const crypto = require("crypto");
-
+const rateLimit = require("express-rate-limit");
 require("dotenv-safe").config();
 
 const authenticationService = require("./services/authenticationService.js");
@@ -46,6 +46,7 @@ function configureServer() {
   server.use(express.urlencoded({ extended: true }));
   server.use(express.json());
   configureSession();
+  configureRateLimit();
 }
 
 function configureSession() {
@@ -61,6 +62,19 @@ function configureSession() {
     })
   );
 }
+
+function configureRateLimit() {
+  server.use(rateLimit({
+    windowMs: 20 * 60 * 1000,
+    max: 150,
+    standardHeaders: 'draft-7',
+    legacyHeaders: false,
+    handler: (req, res) => {
+      res.status(429).sendFile((path.join(__dirname, "../public/html/rateLimit.html")));
+    }
+  }));
+}
+
 
 function serveStaticFiles() {
   server.use("/css", express.static(path.join(__dirname, "../public/css")));

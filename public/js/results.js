@@ -10,6 +10,8 @@ async function generateChart() {
 }
 
 function createChartAttributes(candidates) {
+    candidates.sort((a, b) => b.vote_count - a.vote_count);
+
     let labels = candidates.map(candidate => candidate.first_name + ' ' + candidate.last_name);
     let votes = candidates.map(candidate => candidate.vote_count);
     let backgroundColor = generateColors(candidates.length);
@@ -62,13 +64,16 @@ function getOptions() {
                 align: 'center'
             },
             legend: {
-                labels: {
-                    display: false,
-                }
-            },
-            legend: {
                 display: false
             }
         },
-    }
+        scales: {
+            y: {
+                ticks: {
+                    stepSize: 1,
+                    beginAtZero: true
+                },
+            }
+        }
+    };
 }
