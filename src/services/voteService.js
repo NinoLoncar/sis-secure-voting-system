@@ -14,9 +14,6 @@ let voteLogger = auditLog.getLogger("vote");
 
 exports.postVote = async function (req, res) {
   res.type("application/json");
-  //TODO
-  //validacija JWT
-
   if (!jwt.verifyToken(req, process.env.JWT_SECRET)) {
     res.status(401);
     res.send(JSON.stringify({ error: "Invalid token" }));
@@ -28,7 +25,7 @@ exports.postVote = async function (req, res) {
     return;
   }
 
-  let username = req.session.username; //izvaditi iz JWTa
+  let username = req.session.username;
   let voter = await votersDao.getVoterByUsername(username);
 
   if (voter.voted) {
@@ -65,9 +62,16 @@ exports.postVote = async function (req, res) {
 exports.endVote = async function (req, res) {
   try {
     res.type("application/json");
-    //TODO
-    //validacija JWT
-    let username = req.session.username; //izvaditi iz JWTa
+    if (!jwt.verifyToken(req, process.env.JWT_SECRET)) {
+      res.status(401);
+      res.send(JSON.stringify({ error: "Invalid token" }));
+      return;
+    }
+    let jsonBody = jwt.getJwtPayload(req);
+    let username = jsonBody.username;
+    if (username != "admin") {
+      return401("Not authorized");
+    }
 
     if (globals.getVoteEnded()) {
       return400(res, "Vote has ended");

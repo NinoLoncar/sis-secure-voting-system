@@ -21,12 +21,8 @@ async function handleSendCodeButtonClick() {
 }
 
 async function handleTwoFactorAuthSuccess(response) {
-  const authorization = response.headers.get("Authorization");
-  if (authorization) {
-    const token = authorization.split(" ")[1];
-    sessionStorage.setItem("token", token);
-  }
-
+  let data = await response.json();
+  sessionStorage.setItem("token", data.jwt);
   window.location.href = "/";
 }
 
