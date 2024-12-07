@@ -1,5 +1,7 @@
+let isAuthFailureMessageDisplayed;
 window.addEventListener("DOMContentLoaded", async () => {
-  getTwoFactorAuthCode();
+  isAuthFailureMessageDisplayed = false;
+  await getTwoFactorAuthCode();
   setSendCodeButton();
 });
 
@@ -31,8 +33,31 @@ async function handleTwoFactorAuthSuccess(response) {
 }
 
 function handleTwoFactorAuthFailure() {
-  alert("Two factor authentication failed!");
-  window.location.href = "login";
+  document.getElementById("btnSendCode").style.display = "none";
+
+  if (isAuthFailureMessageDisplayed) return;
+  isAuthFailureMessageDisplayed = true;
+
+  const authFailureDiv = createAuthFailureDiv();
+  let countdown = 4;
+  setInterval(() => {
+    countdown--;
+    authFailureDiv.innerHTML = `Two-factor authentication failed! Redirecting you to login in ${countdown} seconds...`;
+
+    if (countdown === 0) {
+      window.location.href = "logout";
+      window.location.href = "login";
+    }
+  }, 1000);
+}
+
+function createAuthFailureDiv() {
+  let authFailureDiv = document.createElement("div");
+  authFailureDiv.className = "auth-failure-div";
+  authFailureDiv.innerText = "Two-factor authentication failed!";
+  const container = document.getElementById("authFailureContainer");
+  container.appendChild(authFailureDiv);
+  return authFailureDiv;
 }
 
 function setOptions() {
