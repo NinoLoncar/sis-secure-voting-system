@@ -4,6 +4,7 @@ const CandidateDao = require("../db/daos/candidatesDao.js");
 const paillier = require("../utils/encryption/paillierEncryption.js");
 const rsa = require("../utils/encryption/rsaEncryption.js");
 const auditLog = require("../utils/auditLog.js");
+const jwt = require("../utils/jwt.js");
 
 let votersDao = new VotersDao();
 let votesDao = new VotesDao();
@@ -14,8 +15,16 @@ exports.postVote = async function (req, res) {
   res.type("application/json");
   //TODO
   //validacija JWT
-  let username = req.session.username; //izvaditi iz JWTa
+
+  if(!jwt.provjeriToken(req, process.env.JWT_SECRET)){
+    res.status(401);
+    res.send(JSON.stringify({ error: "Invalid token" }));
+    return;
+  }
+
+  let username = jwt.dajTijeloTokena(req).username;//req.session.username; //izvaditi iz JWTa
   let voter = await votersDao.getVoterByUsername(username);
+
   if (voter.voted) {
     voteLogger.info(`${username} tried to vote multiple times`);
     return401(res, "Voter has already voted");
