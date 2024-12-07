@@ -5,6 +5,7 @@ const paillier = require("../utils/encryption/paillierEncryption.js");
 const rsa = require("../utils/encryption/rsaEncryption.js");
 const auditLog = require("../utils/auditLog.js");
 const jwt = require("../utils/jwt.js");
+const globals = require("../utils/globals.js");
 
 let votersDao = new VotersDao();
 let votesDao = new VotesDao();
@@ -16,9 +17,14 @@ exports.postVote = async function (req, res) {
   //TODO
   //validacija JWT
 
-  if(!jwt.verifyToken(req, process.env.JWT_SECRET)){
+  if (!jwt.verifyToken(req, process.env.JWT_SECRET)) {
     res.status(401);
     res.send(JSON.stringify({ error: "Invalid token" }));
+    return;
+  }
+
+  if (globals.getVoteEnded()) {
+    return400(res, "Vote has ended");
     return;
   }
 
@@ -62,6 +68,12 @@ exports.endVote = async function (req, res) {
     //TODO
     //validacija JWT
     let username = req.session.username; //izvaditi iz JWTa
+
+    if (globals.getVoteEnded()) {
+      return400(res, "Vote has ended");
+      return;
+    }
+
     voteLogger.info(`${username} started the vote count`);
     res.type("application/json");
     let publicKey = await paillier.generatePublicKey(
@@ -82,6 +94,7 @@ exports.endVote = async function (req, res) {
     countVotes(votes, voteCounts, publicKey);
 
     await saveVoteResults(candidates, voteCounts, privateKey);
+    globals.setVoteEnded(true);
     return200(res, "Vote ended");
   } catch (ex) {
     voteLogger.warn(`Error while vote counting: ${ex.message}`);
@@ -89,19 +102,19 @@ exports.endVote = async function (req, res) {
   }
 };
 
-exports.getVotedStatus = async function(req, res) {
+exports.getVotedStatus = async function (req, res) {
   res.type("application/json");
   let username = req.session.username;
   let voter = await votersDao.getVoterByUsername(username);
   res.status(200);
   res.send(JSON.stringify({ voted: voter.voted }));
-}
+};
 
-exports.getRSAPublicKey = async function(req, res) {
+exports.getRSAPublicKey = async function (req, res) {
   res.type("application/json");
   res.status(200);
-  res.send(JSON.stringify({ key: process.env.RSA_PUBLIC}));
-}
+  res.send(JSON.stringify({ key: process.env.RSA_PUBLIC }));
+};
 
 function return400(res, message) {
   res.status(400);

@@ -10,6 +10,7 @@ const authenticationService = require("./services/authenticationService.js");
 const candidateService = require("./services/candidateService.js");
 const voteService = require("./services/voteService.js");
 const auditLog = require("./utils/auditLog.js");
+const globals = require("./utils/globals.js");
 
 const server = express();
 const port = process.env.PORT || 12000;
@@ -19,7 +20,6 @@ startServer();
 function startServer() {
   configureServer();
   serveStaticFiles();
-
 
   serverMiddleware();
 
@@ -56,7 +56,7 @@ function configureSession() {
       secret: sessionSecret,
       saveUninitialized: true,
       cookie: {
-        maxAge: 1000 * 60 * 60
+        maxAge: 1000 * 60 * 60,
       },
       resave: false,
     })
@@ -64,17 +64,20 @@ function configureSession() {
 }
 
 function configureRateLimit() {
-  server.use(rateLimit({
-    windowMs: 20 * 60 * 1000,
-    max: 150,
-    standardHeaders: 'draft-7',
-    legacyHeaders: false,
-    handler: (req, res) => {
-      res.status(429).sendFile((path.join(__dirname, "../public/html/rateLimit.html")));
-    }
-  }));
+  server.use(
+    rateLimit({
+      windowMs: 20 * 60 * 1000,
+      max: 150,
+      standardHeaders: "draft-7",
+      legacyHeaders: false,
+      handler: (req, res) => {
+        res
+          .status(429)
+          .sendFile(path.join(__dirname, "../public/html/rateLimit.html"));
+      },
+    })
+  );
 }
-
 
 function serveStaticFiles() {
   server.use("/css", express.static(path.join(__dirname, "../public/css")));
@@ -95,7 +98,6 @@ function serveServices() {
   server.post("/login", authenticationService.login);
   server.get("/logout", authenticationService.logout);
 
-
   server.get(
     "/send-two-factor-auth-code",
     authenticationService.sendTwoFactorAuthCode
@@ -115,6 +117,10 @@ function serveServices() {
 
 function serveHtml() {
   server.get("/", (req, res) => {
+    if (globals.getVoteEnded()) {
+      res.redirect("/results");
+      return;
+    }
     res.sendFile(path.join(__dirname, "../public/html/index.html"));
   });
   server.get("/login", (req, res) => {
@@ -124,25 +130,33 @@ function serveHtml() {
     res.sendFile(path.join(__dirname, "../public/html/twoFactorAuth.html"));
   });
   server.get("/results", (req, res) => {
+    if (!globals.getVoteEnded()) {
+      res.redirect("/");
+      return;
+    }
     res.sendFile(path.join(__dirname, "../public/html/results.html"));
   });
 }
 
 function isAuthenticated(req, res, next) {
   if (!req.session || !req.session.username) {
-    if (req.path === '/login') {
+    if (req.path === "/login") {
       return next();
     }
-    if (req.method === 'POST') {
-      return res.status(401).send({ error: 'Unauthorized: Session expired' });
+    if (req.method === "POST") {
+      return res.status(401).send({ error: "Unauthorized: Session expired" });
     }
-    return res.redirect('/login');
+    return res.redirect("/login");
   }
   if (!req.session.verified) {
-    if (req.path === '/two-factor-auth' || req.path === '/send-two-factor-auth-code' || req.path === '/check-two-factor-auth-code') {
+    if (
+      req.path === "/two-factor-auth" ||
+      req.path === "/send-two-factor-auth-code" ||
+      req.path === "/check-two-factor-auth-code"
+    ) {
       return next();
     }
-    return res.redirect('/two-factor-auth');
+    return res.redirect("/two-factor-auth");
   }
   next();
 }
