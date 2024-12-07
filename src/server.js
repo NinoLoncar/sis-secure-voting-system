@@ -11,16 +11,17 @@ const candidateService = require("./services/candidateService.js");
 const voteService = require("./services/voteService.js");
 const auditLog = require("./utils/auditLog.js");
 const globals = require("./utils/globals.js");
+const dbInit = require("./db/dbInit.js");
 
 const server = express();
 const port = process.env.PORT || 12000;
 
 startServer();
 
-function startServer() {
+async function startServer() {
+  await initializeDatabase();
   configureServer();
   serveStaticFiles();
-
   serverMiddleware();
 
   serveHtml();
@@ -34,6 +35,9 @@ function startServer() {
   server.listen(port, () => {
     console.log(`Server pokrenut na portu: ${port}`);
   });
+}
+async function initializeDatabase() {
+  await dbInit.initDb();
 }
 
 function configureServer() {
