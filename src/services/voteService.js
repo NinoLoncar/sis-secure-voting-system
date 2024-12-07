@@ -22,7 +22,7 @@ exports.postVote = async function (req, res) {
     return;
   }
 
-  let username = jwt.dajTijeloTokena(req).username;//req.session.username; //izvaditi iz JWTa
+  let username = req.session.username; //izvaditi iz JWTa
   let voter = await votersDao.getVoterByUsername(username);
 
   if (voter.voted) {

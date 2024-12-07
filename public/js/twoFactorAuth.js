@@ -6,7 +6,7 @@ window.addEventListener('DOMContentLoaded', async ()=>{
 async function getTwoFactorAuthCode() {
     await fetch('http://localhost:12000/send-two-factor-auth-code');
 }
-
+ 
 function setSendCodeButton() {
     let btnSendCode = document.getElementById('btnSendCode');
     btnSendCode.addEventListener('click', handleSendCodeButtonClick);
@@ -15,10 +15,17 @@ function setSendCodeButton() {
 async function handleSendCodeButtonClick() {
     let options = setOptions();
     let response = await fetch('http://localhost:12000/check-two-factor-auth-code', options);
-    response.ok ? handleTwoFactorAuthSuccess() : handleTwoFactorAuthFailure();
+    response.ok ? handleTwoFactorAuthSuccess(response) : handleTwoFactorAuthFailure();
 }
 
-async function handleTwoFactorAuthSuccess() {
+async function handleTwoFactorAuthSuccess(response) {
+    
+    const authorization = response.headers.get('Authorization');
+    if(authorization){
+        const token = authorization.split(' ')[1];
+        sessionStorage.setItem('token', token);
+    }
+
     window.location.href = '/'
 }
 

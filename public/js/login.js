@@ -43,19 +43,9 @@ function setBody() {
 
 function handleLoginSuccess(response) {
 
-    const authorization = response.headers.get('Authorization');
-    if(authorization){
-        const token = authorization.split(' ')[1];
-        sessionStorage.setItem('token', token);
-    }
-
     lblError.style.visibility = 'hidden';
     resetInput();
-    if(sessionStorage.getItem('token')) {
-        window.location.href = '/';
-    }else{
-        window.location.href = 'two-factor-auth';
-    }
+    window.location.href = 'two-factor-auth';
 }
 
 function handleLoginFailure() {

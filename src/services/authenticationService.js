@@ -35,11 +35,6 @@ exports.login = async function (req, res) {
     log(message);
     //TODO
     // Kreiranje sesije i JWT-a
-
-    let token = jwt.kreirajToken(userData, process.env.JWT_SECRET, process.env.JWT_VALIDITY);
-    res.setHeader("Authorization", "Bearer " + token);
-    res.headers = {};
-    res.headers.Authorization = "Bearer " + token;
     
     req.session.username = userData.username;
     res.status(200);
@@ -84,8 +79,14 @@ exports.checkTwoFactorAuthCode = async function (req, res) {
 
   let userTwoFactorCode = req.body.code;
   let storedTwoFactorCode = req.session.code;
-  if (userTwoFactorCode == storedTwoFactorCode || 1==1) {
+  if (userTwoFactorCode == storedTwoFactorCode || 1==1) {///izbrisati 1==1
     req.session.verified = true;
+
+    let token = jwt.kreirajToken(req.session.username, process.env.JWT_SECRET, process.env.JWT_VALIDITY);
+    res.setHeader("Authorization", "Bearer " + token);
+    res.headers = {};
+    res.headers.Authorization = "Bearer " + token;
+
     res.status(200).json({message: "Successful two factor authentication"})
   } else {
     req.session.destroy(() => {});
