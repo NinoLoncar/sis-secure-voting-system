@@ -55,3 +55,28 @@
     border-color: #007bff;
     box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
   }
+
+  .auth-failure-div {
+    position: fixed;
+    top: -100px;
+    left: 0;
+    width: 100%;
+    background-color: #ff4d4d;
+    color: white;
+    text-align: center;
+    padding: 15px 0;
+    font-size: 18px;
+    font-weight: bold;
+    z-index: 1000;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    animation: slideDown 0.5s ease forwards;
+  }
+
+  @keyframes slideDown {
+    from {
+      top: -100px;
+    }
+    to {
+      top: 0;
+    }
+  }

@@ -7,7 +7,9 @@ id INTEGER PRIMARY KEY AUTOINCREMENT,
 username VARCHAR(30) NOT NULL,
 email VARCHAR(255) NOT NULL,
 password TEXT NOT NULL,
-voted BOOLEAN NOT NULL
+voted BOOLEAN NOT NULL,
+failed_login_attempts INT DEFAULT 0,
+account_locked_until DATETIME DEFAULT NULL
 );
 
 INSERT INTO voters (username, email, password, voted) 

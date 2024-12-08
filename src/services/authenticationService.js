@@ -25,6 +25,11 @@ exports.login = async function (req, res) {
     return;
   }
 
+  let accountLockedUntil = new Date(existingUser.account_locked_until + "Z");
+  if (new Date() < accountLockedUntil) {
+    return423(res, "Account temporarily locked");
+    return;
+}
   let validPassword = await bycript.verifyPassword(
     userData.password,
     existingUser.password
@@ -33,13 +38,20 @@ exports.login = async function (req, res) {
   if (validPassword) {
     let message = `${req.ip} Successful login with username ${userData.username}`;
     log(message);
+    
+    await userDao.resetFailedLoginAttempts(existingUser.id);
+    
     req.session.username = userData.username;
     res.status(200);
     res.send(JSON.stringify({ message: "Successful login" }));
   } else {
     let message = `${req.ip} Failed login with username ${userData.username}`;
     log(message);
-    return401(res, "Wrong credentials");
+    let isAccountLocked = await handleFailedLoginAttempts(existingUser);
+    if (!isAccountLocked)
+      return401(res, "Wrong credentials");
+    else
+      return423(res, "Account temporarily locked")
   }
 };
 
@@ -95,6 +107,17 @@ exports.checkTwoFactorAuthCode = async function (req, res) {
   }
 };
 
+async function handleFailedLoginAttempts(user) {
+  let userDao = new UserDAO();
+  user = await userDao.incrementFailedLoginAttempts(user.id);
+  if (user.failed_login_attempts == 5) {
+    await userDao.setAccountLockedUntil(user.id);
+    await userDao.resetFailedLoginAttempts(user.id);
+    return true;
+  }
+  return false;
+}
+
 function return400(res, message) {
   res.status(400);
   res.send(JSON.stringify({ error: message }));
@@ -102,6 +125,11 @@ function return400(res, message) {
 
 function return401(res, message) {
   res.status(401);
+  res.send(JSON.stringify({ error: message }));
+}
+
+function return423(res, message) {
+  res.status(423);
   res.send(JSON.stringify({ error: message }));
 }
 
