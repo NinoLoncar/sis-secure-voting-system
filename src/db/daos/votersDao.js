@@ -19,6 +19,30 @@ class VoterDao {
     await this.db.executeQuery(sql, [id]);
     this.db.disconnect();
   };
+
+  incrementFailedLoginAttempts = async function (id) {
+    this.db.connect();
+    let sql = "UPDATE voters SET failed_login_attempts = failed_login_attempts + 1 WHERE id = ?;";
+    await this.db.executeQuery(sql, [id]);
+    sql = "SELECT * FROM voters WHERE id = ?;";
+    var data = await this.db.executeQuery(sql, [id]);
+    this.db.disconnect();
+    return data[0];
+  };
+
+  resetFailedLoginAttempts = async function (id) {
+    this.db.connect();
+    let sql = "UPDATE voters SET failed_login_attempts = 0 WHERE id = ?;";
+    await this.db.executeQuery(sql, [id]);
+    this.db.disconnect();
+  };
+
+  setAccountLockedUntil = async function (id) {
+    this.db.connect();
+    let sql = "UPDATE voters SET account_locked_until = DATETIME('now', '+30 minute') WHERE id = ?;";
+    await this.db.executeQuery(sql, [id]);
+    this.db.disconnect();
+  };
 }
 
 module.exports = VoterDao;

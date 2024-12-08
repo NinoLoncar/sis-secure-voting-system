@@ -22,7 +22,7 @@ function isFormValid() {
 async function login() {
   let options = setOptions();
   let response = await fetch("/login", options);
-  response.ok ? handleLoginSuccess(response) : handleLoginFailure();
+  response.ok ? handleLoginSuccess() : handleLoginFailure(response);
 }
 
 function setOptions() {
@@ -41,15 +41,23 @@ function setBody() {
   return body;
 }
 
-function handleLoginSuccess(response) {
+function handleLoginSuccess() {
   lblError.style.visibility = "hidden";
   resetInput();
   window.location.href = "two-factor-auth";
 }
 
-function handleLoginFailure() {
-  lblError.style.visibility = "visible";
-  resetInput();
+function handleLoginFailure(response) {
+  let lblError = document.getElementById("lblError");
+  if (response.status == 423) {
+    lblError.innerText = "Account temporarily locked!"
+    lblError.style.visibility = "visible";
+    resetInput();
+  } else {
+    lblError.innerText = "Login failed!"
+    lblError.style.visibility = "visible";
+    resetInput();
+  }
 }
 
 function resetInput() {
