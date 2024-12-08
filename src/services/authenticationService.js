@@ -38,9 +38,9 @@ exports.login = async function (req, res) {
   if (validPassword) {
     let message = `${req.ip} Successful login with username ${userData.username}`;
     log(message);
-    //TODO
-    // Kreiranje sesije i JWT-a
+    
     await userDao.resetFailedLoginAttempts(existingUser.id);
+    
     req.session.username = userData.username;
     res.status(200);
     res.send(JSON.stringify({ message: "Successful login" }));
@@ -97,11 +97,10 @@ exports.checkTwoFactorAuthCode = async function (req, res) {
       process.env.JWT_SECRET,
       process.env.JWT_VALIDITY
     );
-    res.setHeader("Authorization", "Bearer " + token);
-    res.headers = {};
-    res.headers.Authorization = "Bearer " + token;
 
-    res.status(200).json({ message: "Successful two factor authentication" });
+    res
+      .status(200)
+      .json({ message: "Successful two factor authentication", jwt: token });
   } else {
     req.session.destroy(() => {});
     return401(res, "Two factor authentication failed");
