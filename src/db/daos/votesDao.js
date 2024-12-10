@@ -7,7 +7,7 @@ class VotesDao {
   getVotes = async function () {
     this.db.connect();
     let sql = "SELECT * FROM votes";
-    var data = await this.db.executeQuery(sql, []);
+    let data = await this.db.executeQuery(sql, []);
     this.db.disconnect();
     return data;
   };
@@ -15,7 +15,7 @@ class VotesDao {
   insertVote = async function (vote, signature) {
     this.db.connect();
     let sql = "INSERT INTO votes (encrypted_vote, signature) VALUES (?, ?)";
-    var data = await this.db.executeQuery(sql, [vote, signature]);
+    await this.db.executeQuery(sql, [vote, signature]);
     this.db.disconnect();
   };
 }

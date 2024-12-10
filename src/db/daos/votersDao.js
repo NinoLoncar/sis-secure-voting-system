@@ -7,7 +7,7 @@ class VoterDao {
   getVoterByUsername = async function (username) {
     this.db.connect();
     let sql = "SELECT * FROM voters WHERE username=?;";
-    var data = await this.db.executeQuery(sql, [username]);
+    let data = await this.db.executeQuery(sql, [username]);
     this.db.disconnect();
     if (data.length == 1) return data[0];
     else return null;
@@ -25,7 +25,7 @@ class VoterDao {
     let sql = "UPDATE voters SET failed_login_attempts = failed_login_attempts + 1 WHERE id = ?;";
     await this.db.executeQuery(sql, [id]);
     sql = "SELECT * FROM voters WHERE id = ?;";
-    var data = await this.db.executeQuery(sql, [id]);
+    let data = await this.db.executeQuery(sql, [id]);
     this.db.disconnect();
     return data[0];
   };

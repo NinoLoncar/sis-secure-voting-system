@@ -1,6 +1,6 @@
-var txtUsername = document.getElementById("txtUsername");
-var txtPassword = document.getElementById("txtPassword");
-var lblError = document.getElementById("lblError");
+let txtUsername = document.getElementById("txtUsername");
+let txtPassword = document.getElementById("txtPassword");
+let lblError = document.getElementById("lblError");
 
 window.addEventListener("DOMContentLoaded", () => {
   setLoginButton();

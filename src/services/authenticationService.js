@@ -147,7 +147,6 @@ async function sendMail(req) {
     "SVS - 2FA Code",
     `Your code: ${code}`
   );
-  return;
 }
 
 function generateRandomCodeNumber() {

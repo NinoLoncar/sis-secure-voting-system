@@ -4,6 +4,7 @@ const path = require("path");
 const log4js = require("log4js");
 const crypto = require("crypto");
 const rateLimit = require("express-rate-limit");
+
 require("dotenv-safe").config();
 
 const authenticationService = require("./services/authenticationService.js");
@@ -23,7 +24,6 @@ async function startServer() {
   configureServer();
   serveStaticFiles();
   serverMiddleware();
-
   serveHtml();
   serveServices();
 
@@ -74,6 +74,7 @@ function configureRateLimit() {
       max: 150,
       standardHeaders: "draft-7",
       legacyHeaders: false,
+      keyGenerator: (req) => req.ip,
       handler: (req, res) => {
         res
           .status(429)
@@ -143,7 +144,7 @@ function serveHtml() {
 }
 
 function isAuthenticated(req, res, next) {
-  if (!req.session || !req.session.username) {
+  if (!req.session?.username) {
     if (req.path === "/login") {
       return next();
     }

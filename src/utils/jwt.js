@@ -11,7 +11,7 @@ exports.verifyToken = function (request, jwtSecretKey) {
   if (request.headers.authorization != null) {
     let token = request.headers.authorization.split(" ")[1];
     try {
-      let data = jwt.verify(token, jwtSecretKey);
+      jwt.verify(token, jwtSecretKey);
       return true;
     } catch (e) {
       return false;
