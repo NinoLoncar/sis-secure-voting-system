@@ -4,7 +4,6 @@ const path = require("path");
 const log4js = require("log4js");
 const crypto = require("crypto");
 const rateLimit = require("express-rate-limit");
-
 require("dotenv-safe").config();
 
 const authenticationService = require("./services/authenticationService.js");
@@ -24,6 +23,7 @@ async function startServer() {
   configureServer();
   serveStaticFiles();
   serverMiddleware();
+
   serveHtml();
   serveServices();
 
@@ -51,6 +51,8 @@ function configureServer() {
   server.use(express.json());
   configureSession();
   configureRateLimit();
+  configureCSP();
+  server.disable("x-powered-by");
 }
 
 function configureSession() {
@@ -61,6 +63,9 @@ function configureSession() {
       saveUninitialized: true,
       cookie: {
         maxAge: 1000 * 60 * 60,
+        secure: true,
+        httpOnly: true,
+        sameSite: "strict",
       },
       resave: false,
     })
@@ -74,7 +79,6 @@ function configureRateLimit() {
       max: 150,
       standardHeaders: "draft-7",
       legacyHeaders: false,
-      keyGenerator: (req) => req.ip,
       handler: (req, res) => {
         res
           .status(429)
@@ -82,6 +86,23 @@ function configureRateLimit() {
       },
     })
   );
+}
+
+function configureCSP(){
+  server.use((req, res, next) => {
+    res.setHeader(
+      "Content-Security-Policy",
+      "default-src 'self';"+
+      "script-src 'self' https://cdn.jsdelivr.net;"+
+      "style-src 'self';"+
+      "style-src-elem 'self' https://cdn.jsdelivr.net;"+ 
+      "img-src 'self' https://i.pinimg.com https://i.namu.wiki https://images.genius.com;"+
+      "frame-ancestors 'none';"+ 
+      "form-action 'self';"
+    );
+    res.setHeader("X-Content-Type-Options", "nosniff");
+    next();
+  });
 }
 
 function serveStaticFiles() {
@@ -144,7 +165,7 @@ function serveHtml() {
 }
 
 function isAuthenticated(req, res, next) {
-  if (!req.session?.username) {
+  if (!req.session || !req.session.username) {
     if (req.path === "/login") {
       return next();
     }
