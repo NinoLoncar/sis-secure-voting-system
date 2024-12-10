@@ -40,6 +40,12 @@ exports.postVote = async function (req, res) {
     return;
   }
   let candidateId = rsa.decrypt(encryptedCandidateId, process.env.RSA_PRIVATE);
+  if (!candidateId) {
+    voteLogger.info(`Error while decrypting candidate_id which was recieved from user with username ${username}`);
+    return400(res, "Invalid candidate_id");
+    return;
+  }
+
   let candidate = await candidateDao.getCandidateById(candidateId);
   if (!candidate) {
     voteLogger.info(`${username} tried to vote for invalid candidate`);
